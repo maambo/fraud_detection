@@ -30,7 +30,7 @@
         // For Credit transactions
         if ($type == "credit") {
             $final_balance = $balance + $amt;
-
+            
             $sql1 = "INSERT INTO passbook".$id." VALUES(
                         NULL,
                         NOW(),
@@ -41,7 +41,18 @@
                     )";
 
             if (($conn->query($sql1) === TRUE)) {
-                $err_no = 0;
+                $fraudThreshhold = 10000;
+                if($fraudThreshhold<=$amt){
+                    $fraud= "potential fraud!!!";
+                }else{
+                    $fraud = "No fraud";
+                }
+                $insertFraud = $conn->query("INSERT into fraud(Sender, Receiver, type, amount, init_balance, final_balance, output) 
+                                VALUES('{$id}', '{$id}', '{$type}', '{$amt}', '{$balance}', '{$final_balance}', '{$fraud}')") or die();
+                if($insertFraud === TRUE){
+                    $err_no = 0;
+                }
+                
             }
         }
 
@@ -60,7 +71,17 @@
                         )";
 
                 if (($conn->query($sql1) === TRUE)) {
-                    $err_no = 0;
+                    $fraudThreshhold = 10000;
+                    if($fraudThreshhold<=$amt){
+                        $fraud= "potential fraud!!!";
+                    }else{
+                        $fraud = "No fraud";
+                    }
+                    $insertFraud = $conn->query("INSERT into fraud(Sender, Receiver, type, amount, init_balance, final_balance, output) 
+                                    VALUES('{$id}', '{$id}', '{$type}', '{$amt}', '{$balance}', '{$final_balance}', '{$fraud}')") or die();
+                    if($insertFraud === TRUE){
+                        $err_no = 0;
+                    }
                 }
             }
             else {
